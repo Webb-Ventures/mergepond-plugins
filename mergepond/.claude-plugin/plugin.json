@@ -2,8 +2,19 @@
   "name": "mergepond",
   "version": "1.0.6",
   "description": "Work in your own git worktree, set up by the repo's recipe (copy .env, link node_modules, install), and show progress on Mergepond's worktree board. Needs pond, which comes with Mergepond.",
-  "author": { "name": "Webb Ventures", "url": "https://mergepond.dev" },
+  "author": {
+    "name": "Webb Ventures",
+    "url": "https://mergepond.dev"
+  },
   "homepage": "https://mergepond.dev/docs/coding-agents",
   "repository": "https://github.com/Webb-Ventures/mergepond-plugins",
-  "keywords": ["git", "worktree", "mergepond"]
+  "keywords": [
+    "git",
+    "worktree",
+    "worktrees",
+    "mergepond",
+    "mcp",
+    "coding-agents"
+  ],
+  "license": "MIT"
 }
