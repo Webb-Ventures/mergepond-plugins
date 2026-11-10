@@ -19,7 +19,7 @@ Mergepond is free for local repositories. [Download it](https://mergepond.dev) o
 brew install --cask webb-ventures/tap/mergepond
 ```
 
-This repository holds what coding agents need to use it.
+This repository holds what coding agents need to use it. For a step-by-step setup, see the [walkthrough](https://mergepond.dev/guides/coding-agents-plugin); every setting and tool is in the [reference](https://mergepond.dev/docs/coding-agents).
 
 ## Claude Code
 
