@@ -1,0 +1,12 @@
+# Add to ~/.codex/config.toml
+
+[mcp_servers.mergepond]
+command = "pond"
+args = ["mcp"]
+# Lets a long setup recipe (a big install) finish within one create_worktree call.
+tool_timeout_sec = 600
+
+# Optional, at the top level of the file (before any [table]): marks this session's
+# worktrees "review" when a turn ends. Only if you don't already use notify for something else;
+# Codex runs one notify program.
+# notify = ["pond", "hook", "codex"]

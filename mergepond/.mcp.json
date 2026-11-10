@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "mergepond": {
+      "command": "sh",
+      "args": [
+        "-c",
+        "if command -v pond >/dev/null 2>&1; then exec pond mcp; else exec /Applications/Mergepond.app/Contents/Resources/agents/pond mcp; fi"
+      ]
+    }
+  }
+}

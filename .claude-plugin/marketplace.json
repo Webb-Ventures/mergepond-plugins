@@ -1,0 +1,14 @@
+{
+  "name": "mergepond",
+  "owner": { "name": "Webb Ventures", "url": "https://mergepond.dev" },
+  "metadata": { "description": "Mergepond's plugins for coding agents." },
+  "plugins": [
+    {
+      "name": "mergepond",
+      "source": "./mergepond",
+      "description": "Work in your own git worktree, set up by the repo's recipe, and show progress on Mergepond's worktree board.",
+      "homepage": "https://mergepond.dev/docs/coding-agents",
+      "category": "development"
+    }
+  ]
+}

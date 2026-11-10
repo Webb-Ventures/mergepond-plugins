@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      { "hooks": [{ "type": "command", "command": "p=$(command -v pond 2>/dev/null || echo /Applications/Mergepond.app/Contents/Resources/agents/pond); if [ -x \"$p\" ]; then \"$p\" hook claude; fi; exit 0", "timeout": 10 }] }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "p=$(command -v pond 2>/dev/null || echo /Applications/Mergepond.app/Contents/Resources/agents/pond); if [ -x \"$p\" ]; then \"$p\" hook claude; fi; exit 0", "timeout": 10 }] }
+    ]
+  }
+}
