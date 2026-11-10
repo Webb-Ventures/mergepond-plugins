@@ -2,7 +2,7 @@
 
 Let Claude Code, Codex and other coding agents set up and manage their own git worktrees with [Mergepond](https://mergepond.dev). One tool call makes a branch for the task, checks it out in its own folder and runs the repository's setup recipe (copy `.env` files, link `node_modules`, install). The worktree shows on Mergepond's worktree board, marked working, ready for review or done.
 
-Everything here runs on `pond`, the command line tool that comes with Mergepond. Mergepond doesn't need to be running. On a machine you reach over SSH, Mergepond installs `pond` the first time it connects. To put `pond` on your `PATH` on a Mac, choose **Mergepond › Install Command Line Tool**.
+Everything here runs on `pond`, the command line tool that comes with Mergepond. Mergepond doesn't need to be running. On a machine you reach over SSH, Mergepond installs `pond` the first time it connects. To put `pond` on your `PATH` on a Mac, choose **Mergepond › Install command line tool…** (Install Command Line Tool before 1.0.7).
 
 ## What is Mergepond?
 
