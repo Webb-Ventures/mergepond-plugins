@@ -4,6 +4,23 @@ Let Claude Code, Codex and other coding agents set up and manage their own git w
 
 Everything here runs on `pond`, the command line tool that comes with Mergepond. Mergepond doesn't need to be running. On a machine you reach over SSH, Mergepond installs `pond` the first time it connects. To put `pond` on your `PATH` on a Mac, choose **Mergepond › Install Command Line Tool**.
 
+## What is Mergepond?
+
+[Mergepond](https://mergepond.dev) is a Git client for the Mac. It keeps all your worktrees, projects and SSH machines in one window:
+
+- **Worktrees:** every worktree of a repository on one board, with branch, changes, ahead and behind, and what its agent is doing.
+- **Workspaces:** group repositories by client or project, each with its own commit identity.
+- **Remote repositories:** open a repository on a machine you SSH into and use it like a local one. Mergepond uses your SSH login and opens no ports.
+- **The everyday Git work:** staging, committing, history, branches, stashes, merges and conflicts, with undo.
+
+Mergepond is free for local repositories. [Download it](https://mergepond.dev) or install it with Homebrew:
+
+```
+brew install --cask webb-ventures/tap/mergepond
+```
+
+This repository holds what coding agents need to use it.
+
 ## Claude Code
 
 ```
@@ -86,3 +103,7 @@ email = "ada@example.com"
 ```
 
 Mergepond's worktree settings save to `.mergepond.local.toml`, or to `.mergepond.toml` with **Share with the team** turned on.
+
+## Licence
+
+This repository is under the [MIT licence](LICENSE). Mergepond and `pond` are proprietary software from Webb Ventures. `pond` comes free with Mergepond.
