@@ -1,0 +1,38 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: JSON files parse
+        run: |
+          for f in $(git ls-files '*.json'); do
+            python3 -m json.tool "$f" >/dev/null || { echo "::error file=$f::not valid JSON"; exit 1; }
+          done
+      - name: Skills have a name and description
+        run: |
+          for f in $(git ls-files '*/SKILL.md'); do
+            head -1 "$f" | grep -qx -- '---' || { echo "::error file=$f::no frontmatter"; exit 1; }
+            grep -q '^name: ' "$f" && grep -q '^description: ' "$f" || { echo "::error file=$f::needs name and description"; exit 1; }
+          done
+      - name: Claude Code validates the marketplace and plugin
+        run: |
+          npm install --global @anthropic-ai/claude-code@2.1.321
+          claude plugin validate .
+          claude plugin validate ./mergepond
