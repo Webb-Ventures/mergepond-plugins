@@ -27,8 +27,8 @@ Call `worktree_policy` once at the start of work in a repository.
 - Commit as you go, in the worktree.
 - The plugin's hooks mark your worktrees "working" when the user sends a message and "review" when you stop, so you don't need to. When something is ready, call `mark_worktree` with `state: "review"` and a `note` saying what's ready; the note shows on the board. Use `"done"` when nothing more is needed.
 - `list_worktrees` shows every worktree with its changes, commits ahead and behind, and whether it's merged.
-- You can't remove worktrees. When one is finished, tell the user; they remove it on the board or with `pond remove`.
+- You can't remove worktrees. When one is finished, tell the user; they remove it on the board or with `pond wt remove`.
 
 ## Without the MCP server
 
-The same in a shell: `pond policy`, `pond new --task "fix login redirect" --note "…"` (prints the folder), `pond list`, `pond status`, `pond mark review --note "…"`. Add `--json` for machine-readable output.
+The same in a shell: `pond wt policy`, `pond wt new --task "fix login redirect" --note "…"` (prints the folder), `pond wt list`, `pond wt status`, `pond wt mark review --note "…"`. Add `--json` for machine-readable output. If `pond` says `wt` is an unknown command, its Mergepond is older than these commands: tell the user to update Mergepond.
