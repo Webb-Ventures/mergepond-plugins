@@ -31,4 +31,4 @@ Call `worktree_policy` once at the start of work in a repository.
 
 ## Without the MCP server
 
-The same in a shell: `pond wt policy`, `pond wt new --task "fix login redirect" --note "…"` (prints the folder), `pond wt list`, `pond wt status`, `pond wt mark review --note "…"`. Add `--json` for machine-readable output.
+The same in a shell: `pond wt policy`, `pond wt new --task "fix login redirect" --note "…"` (prints the folder), `pond wt list`, `pond wt status`, `pond wt mark review --note "…"`. Add `--json` for machine-readable output. If `pond` says `wt` is an unknown command, its Mergepond is older than these commands: tell the user to update Mergepond.
