@@ -44,7 +44,7 @@ Then add [`codex/AGENTS.md`](codex/AGENTS.md) to your `AGENTS.md` (in the reposi
 
 ## Other agents
 
-Register `pond mcp` as a stdio MCP server, or have the agent run `pond` in a shell. `pond help` lists the commands.
+Register `pond mcp` as a stdio MCP server, or have the agent run `pond` in a shell. `pond help` lists the commands, and `pond wt` the worktree commands.
 
 ## Is the agent meant to use a worktree?
 
@@ -54,7 +54,7 @@ That's up to you, per repository. The first time an agent works in a repository,
 - only use one **when asked**, or
 - **ask** before each task.
 
-Your answer is saved in the repository's `.mergepond.local.toml`. Change it with `pond policy always`, `pond policy when-asked`, `pond policy ask` or `pond policy clear`, or in Mergepond's worktree settings.
+Your answer is saved in the repository's `.mergepond.local.toml`. Change it with `pond wt policy always`, `pond wt policy when-asked`, `pond wt policy ask` or `pond wt policy clear`, or in Mergepond's worktree settings.
 
 ## Tools
 
@@ -66,7 +66,7 @@ Your answer is saved in the repository's `.mergepond.local.toml`. Change it with
 | `worktree_status` | One worktree, with setup progress. `wait_seconds` waits for setup to finish. |
 | `mark_worktree` | `working`, `review` or `done`, with a note, for the board. |
 
-Agents can't remove worktrees. You do that on the board, or with `pond remove <branch>`, which refuses a worktree with uncommitted changes or unpushed commits unless you add `--force`.
+Agents can't remove worktrees. You do that on the board, or with `pond wt remove <branch>`, which refuses a worktree with uncommitted changes or unpushed commits unless you add `--force`.
 
 ## Project settings
 
