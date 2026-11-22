@@ -54,13 +54,15 @@ That's up to you, per repository. The first time an agent works in a repository,
 - only use one **when asked**, or
 - **ask** before each task.
 
-Your answer is saved in the repository's `.mergepond.local.toml`. Change it with `pond wt policy always`, `pond wt policy when-asked`, `pond wt policy ask` or `pond wt policy clear`, or in Mergepond's worktree settings.
+It also asks once where your worktrees should live, such as `~/worktrees` (each goes in `<folder>/<repo>/<branch>`), for this repository or for every repository. Until you've chosen, agents won't make a worktree: Mergepond doesn't put them in its default spot (`../<repo>.worktrees/`) unless you say so. Set it yourself with `pond wt policy --parent ~/worktrees`, adding `--everywhere` for every repository.
+
+Your answers are saved in the repository's `.mergepond.local.toml`, or for every repository in `~/.config/mergepond/config.toml`. Change them with `pond wt policy always`, `pond wt policy when-asked`, `pond wt policy ask` or `pond wt policy clear` (and `pond wt policy --parent <folder>` or `--clear-location`), or in Mergepond's worktree settings.
 
 ## Tools
 
 | Tool | What it does |
 | --- | --- |
-| `worktree_policy` | Whether to use a worktree in this repository, and what to do. With `isolation`, saves the user's answer. |
+| `worktree_policy` | Whether to use a worktree in this repository, where worktrees go, and what to do. With `isolation`, `parent` or `location` (plus `everywhere`), saves the user's answer. |
 | `create_worktree` | Start a task: a new branch named for the `task` (or a given `branch`, or a `pr`) in a new folder, set up by the recipe and marked working. Returns the folder and each setup step's result. |
 | `list_worktrees` | Every worktree: branch, folder, changes, ahead and behind, merged, on the remote, and what agents said. |
 | `worktree_status` | One worktree, with setup progress. `wait_seconds` waits for setup to finish. |
@@ -77,12 +79,20 @@ Mergepond and `pond` read two files at the top of the repository:
 
 A setting in your local file wins over the team's. Anything neither file sets comes from Mergepond's settings.
 
+For every repository, put the folder in `~/.config/mergepond/config.toml` (or under `$XDG_CONFIG_HOME`). It only takes `[worktrees]`, and a repository's own files win over it:
+
+```toml
+[worktrees]
+parent = "~/worktrees"
+```
+
 ```toml
 workspace = "Acme"                     # the Mergepond workspace this repository belongs to
 identity = "Work"                      # the identity profile to commit as, by name
 
 [worktrees]
-location = "../<repo>.worktrees/<branch>"
+parent = "~/worktrees"                 # every worktree in ~/worktrees/<repo>/<branch>
+# location = "../<repo>.worktrees/<branch>"   # or a full pattern; wins over parent
 
 [setup]
 copy = [".env", ".env.local"]          # files that aren't in Git, copied from the main folder
