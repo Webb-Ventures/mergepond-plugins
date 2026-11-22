@@ -9,12 +9,21 @@ Mergepond's tools (the `mergepond` MCP server, or `pond` in a shell) make a git 
 
 ## First: what does the user want here?
 
-Call `worktree_policy` once at the start of work in a repository.
+Call `worktree_policy` once at the start of work in a repository. It answers two questions: whether to use a worktree (`decided`, `isolation`) and where worktrees go (`locationDecided`, `location`).
 
 - **Not decided**: before changing any code, ask the user once how you should work in this repository: always in a new worktree, only in a worktree when they ask for one, or ask before each task. Save their answer with `worktree_policy` and `isolation` set to `always`, `when-asked` or `ask`. Don't save a choice they didn't make.
 - **always**: start every task that changes code in a new worktree.
 - **when-asked**: work in the current folder unless the user asks for a worktree.
 - **ask**: before a task that changes code, ask whether to use a new worktree.
+
+## Where worktrees go
+
+If `locationDecided` is false, the user hasn't said where worktrees should live, and `create_worktree` will refuse until they do. Before the first worktree (or together with the question above), ask them:
+
+- which folder should hold their worktrees, such as `~/worktrees` (each worktree goes in `<folder>/<repo>/<branch>`), and
+- whether that's for this repository or for every repository.
+
+Save the answer with `worktree_policy`: `parent` set to the folder, and `everywhere: true` if it's for every repository. Mergepond's default (`defaultLocation`, beside the repository in `<repo>.worktrees`) is one option to offer; if they pick it, save it as `location: "../<repo>.worktrees/<branch>"`. Never choose the folder yourself.
 
 ## Starting a task in a worktree
 
@@ -31,4 +40,4 @@ Call `worktree_policy` once at the start of work in a repository.
 
 ## Without the MCP server
 
-The same in a shell: `pond wt policy`, `pond wt new --task "fix login redirect" --note "…"` (prints the folder), `pond wt list`, `pond wt status`, `pond wt mark review --note "…"`. Add `--json` for machine-readable output. If `pond` says `wt` is an unknown command, its Mergepond is older than these commands: tell the user to update Mergepond.
+The same in a shell: `pond wt policy`, `pond wt policy --parent ~/worktrees [--everywhere]`, `pond wt new --task "fix login redirect" --note "…"` (prints the folder), `pond wt list`, `pond wt status`, `pond wt mark review --note "…"`. Add `--json` for machine-readable output. If `pond` says `wt` is an unknown command, its Mergepond is older than these commands: tell the user to update Mergepond.
