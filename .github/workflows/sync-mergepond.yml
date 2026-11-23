@@ -1,0 +1,90 @@
+# The Mergepond app bundles copies of two files from here for its "Set up pond and coding agents"
+# sheet (apps/desktop/src-tauri/src/setup/bundled in Webb-Ventures/mergepond):
+#   mergepond/.claude-plugin/plugin.json  its version is the plugin the app installs and updates to
+#   codex/AGENTS.md                       what the sheet adds to ~/.codex/AGENTS.md
+# When either changes on main, this opens a pull request into Mergepond's staging with the new
+# copies, or updates the one already open. Needs the MERGEPOND_SYNC_TOKEN secret (README, "Releasing").
+name: Sync to Mergepond
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - mergepond/.claude-plugin/plugin.json
+      - codex/AGENTS.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-mergepond
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: sync
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      APP_REPO: Webb-Ventures/mergepond
+      BRANCH: sync/mergepond-plugin
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: plugins
+          persist-credentials: false
+      # Pushes with the token, so Mergepond's CI runs on the pull request (pushes made with
+      # this repository's own GITHUB_TOKEN wouldn't start it, and staging requires it).
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ env.APP_REPO }}
+          ref: staging
+          path: app
+          token: ${{ secrets.MERGEPOND_SYNC_TOKEN }}
+      - name: Copy the files and open a pull request
+        env:
+          GH_TOKEN: ${{ secrets.MERGEPOND_SYNC_TOKEN }}
+          SOURCE: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+        run: |
+          set -euo pipefail
+          bundled=app/apps/desktop/src-tauri/src/setup/bundled
+          cp plugins/mergepond/.claude-plugin/plugin.json "$bundled/plugin.json"
+          cp plugins/codex/AGENTS.md "$bundled/codex-AGENTS.md"
+          cd app
+
+          open="$(gh pr list -R "$APP_REPO" --head "$BRANCH" --state open --json number -q '.[0].number // empty')"
+          if git diff --quiet; then
+            echo "Mergepond's staging already has these files."
+            if [[ -n "$open" ]]; then
+              gh pr close "$open" -R "$APP_REPO" --delete-branch \
+                --comment "Staging already has the plugin files from $SOURCE."
+            fi
+            exit 0
+          fi
+
+          version="$(node -p 'require("./apps/desktop/src-tauri/src/setup/bundled/plugin.json").version')"
+          title="Bundled plugin: Mergepond plugin $version"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$BRANCH"
+          git commit -qam "$title" -m "Copied from $SOURCE."
+          git push --force origin "$BRANCH"
+
+          # shellcheck disable=SC2016 # the backticks are Markdown
+          changed="$(git diff --name-only HEAD~1 HEAD | sed 's/.*/- `&`/')"
+          body="$(cat <<EOF
+          Copies the files the setup sheet bundles from Webb-Ventures/mergepond-plugins at $SOURCE:
+
+          $changed
+
+          \`plugin.json\`'s version ($version) is the plugin this Mergepond installs, offers **Update** to, and updates to in the background at launch. \`codex-AGENTS.md\` is what **Add Mergepond's instructions** appends to \`~/.codex/AGENTS.md\`. Users get them with the next app release.
+
+          Opened by the \`sync-mergepond\` workflow in mergepond-plugins. A later change there updates this pull request.
+          EOF
+          )"
+          if [[ -n "$open" ]]; then
+            gh pr edit "$open" -R "$APP_REPO" --title "$title" --body "$body"
+          else
+            gh pr create -R "$APP_REPO" --base staging --head "$BRANCH" --title "$title" --body "$body"
+          fi

@@ -114,6 +114,14 @@ email = "ada@example.com"
 
 Mergepond's worktree settings save to `.mergepond.local.toml`, or to `.mergepond.toml` with **Share with the team** turned on.
 
+## Releasing
+
+A new plugin version is a `version` bump in `mergepond/.claude-plugin/plugin.json`, merged to `main`. Claude Code installs from `main`, so it's out as soon as it merges.
+
+The Mergepond app bundles copies of `plugin.json` and `codex/AGENTS.md` for its **Set up pond and coding agents** sheet. Its version is the one the app installs and updates to. When either file changes on `main`, the `sync-mergepond` workflow opens a pull request into Mergepond's `staging` with the new copies, or updates the one already open. Users get them with the next Mergepond release. Run it by hand from the Actions tab.
+
+The workflow needs a `MERGEPOND_SYNC_TOKEN` secret: a fine-grained personal access token (or GitHub App token) for Webb-Ventures/mergepond with **Contents** and **Pull requests** set to read and write. It pushes the `sync/mergepond-plugin` branch with that token rather than this repository's own, so Mergepond's required checks run on the pull request.
+
 ## Licence
 
 This repository is under the [MIT licence](LICENSE). Mergepond and `pond` are proprietary software from Webb Ventures. `pond` comes free with Mergepond.
