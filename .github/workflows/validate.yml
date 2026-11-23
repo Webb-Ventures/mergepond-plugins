@@ -31,6 +31,15 @@ jobs:
             head -1 "$f" | grep -qx -- '---' || { echo "::error file=$f::no frontmatter"; exit 1; }
             grep -q '^name: ' "$f" && grep -q '^description: ' "$f" || { echo "::error file=$f::needs name and description"; exit 1; }
           done
+      - name: The worktrees skill is the same for every agent
+        run: |
+          for f in antigravity/mergepond/skills/worktrees/SKILL.md opencode/skills/worktrees/SKILL.md; do
+            cmp -s mergepond/skills/worktrees/SKILL.md "$f" || { echo "::error file=$f::differs from mergepond/skills/worktrees/SKILL.md"; exit 1; }
+          done
+      - name: The OpenCode plugin parses and has a version
+        run: |
+          node --check opencode/mergepond.js
+          head -1 opencode/mergepond.js | grep -Eq '^// mergepond-opencode [0-9]+\.[0-9]+\.[0-9]+$' || { echo "::error file=opencode/mergepond.js::first line must be // mergepond-opencode <version>"; exit 1; }
       - name: Claude Code validates the marketplace and plugin
         run: |
           npm install --global @anthropic-ai/claude-code@2.1.321

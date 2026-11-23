@@ -1,8 +1,10 @@
-# The Mergepond app bundles copies of two files from here for its "Set up pond and coding agents"
+# The Mergepond app bundles copies of these from here for its "Set up pond and coding agents"
 # sheet (apps/desktop/src-tauri/src/setup/bundled in Webb-Ventures/mergepond):
 #   mergepond/.claude-plugin/plugin.json  its version is the plugin the app installs and updates to
 #   codex/AGENTS.md                       what the sheet adds to ~/.codex/AGENTS.md
-# When either changes on main, this opens a pull request into Mergepond's staging with the new
+#   antigravity/mergepond/                the Antigravity plugin it installs (bundled/antigravity)
+#   opencode/                             the OpenCode plugin and skill it installs (bundled/opencode)
+# When any of them changes on main, this opens a pull request into Mergepond's staging with the new
 # copies, or updates the one already open. Needs the MERGEPOND_SYNC_TOKEN secret (README, "Releasing").
 name: Sync to Mergepond
 
@@ -12,6 +14,8 @@ on:
     paths:
       - mergepond/.claude-plugin/plugin.json
       - codex/AGENTS.md
+      - antigravity/mergepond/**
+      - opencode/**
   workflow_dispatch:
 
 permissions:
@@ -51,10 +55,13 @@ jobs:
           bundled=app/apps/desktop/src-tauri/src/setup/bundled
           cp plugins/mergepond/.claude-plugin/plugin.json "$bundled/plugin.json"
           cp plugins/codex/AGENTS.md "$bundled/codex-AGENTS.md"
+          rm -rf "$bundled/antigravity" "$bundled/opencode"
+          cp -R plugins/antigravity/mergepond "$bundled/antigravity"
+          cp -R plugins/opencode "$bundled/opencode"
           cd app
 
           open="$(gh pr list -R "$APP_REPO" --head "$BRANCH" --state open --json number -q '.[0].number // empty')"
-          if git diff --quiet; then
+          if [[ -z "$(git status --porcelain)" ]]; then
             echo "Mergepond's staging already has these files."
             if [[ -n "$open" ]]; then
               gh pr close "$open" -R "$APP_REPO" --delete-branch \
@@ -64,11 +71,14 @@ jobs:
           fi
 
           version="$(node -p 'require("./apps/desktop/src-tauri/src/setup/bundled/plugin.json").version')"
-          title="Bundled plugin: Mergepond plugin $version"
+          agy="$(node -p 'require("./apps/desktop/src-tauri/src/setup/bundled/antigravity/plugin.json").version')"
+          oc="$(head -1 apps/desktop/src-tauri/src/setup/bundled/opencode/mergepond.js | awk '{print $3}')"
+          title="Bundled plugins: Claude Code $version, Antigravity $agy, OpenCode $oc"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c "$BRANCH"
-          git commit -qam "$title" -m "Copied from $SOURCE."
+          git add -A apps/desktop/src-tauri/src/setup/bundled
+          git commit -qm "$title" -m "Copied from $SOURCE."
           git push --force origin "$BRANCH"
 
           # shellcheck disable=SC2016 # the backticks are Markdown
@@ -78,7 +88,7 @@ jobs:
 
           $changed
 
-          \`plugin.json\`'s version ($version) is the plugin this Mergepond installs, offers **Update** to, and updates to in the background at launch. \`codex-AGENTS.md\` is what **Add Mergepond's instructions** appends to \`~/.codex/AGENTS.md\`. Users get them with the next app release.
+          \`plugin.json\`'s version ($version) is the plugin this Mergepond installs, offers **Update** to, and updates to in the background at launch. \`codex-AGENTS.md\` is what **Add Mergepond's instructions** appends to \`~/.codex/AGENTS.md\`. \`antigravity/\` and \`opencode/\` are the plugins the sheet installs for Antigravity and OpenCode, and their versions the ones it offers **Update** to. Users get them with the next app release.
 
           Opened by the \`sync-mergepond\` workflow in mergepond-plugins. A later change there updates this pull request.
           EOF

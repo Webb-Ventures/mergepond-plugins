@@ -1,8 +1,8 @@
 # Mergepond for coding agents
 
-Let Claude Code, Codex and other coding agents set up and manage their own git worktrees with [Mergepond](https://mergepond.dev). One tool call makes a branch for the task, checks it out in its own folder and runs the repository's setup recipe (copy `.env` files, link `node_modules`, install). The worktree shows on Mergepond's worktree board, marked working, ready for review or done.
+Let Claude Code, Codex, OpenCode, Antigravity and other coding agents set up and manage their own git worktrees with [Mergepond](https://mergepond.dev). One tool call makes a branch for the task, checks it out in its own folder and runs the repository's setup recipe (copy `.env` files, link `node_modules`, install). The worktree shows on Mergepond's worktree board, marked working, ready for review or done.
 
-Everything here runs on `pond`, the command line tool that comes with Mergepond. The `pond wt` commands need the Mergepond release after 1.2; the MCP server and the hooks work with earlier versions too. Mergepond doesn't need to be running. On a machine you reach over SSH, Mergepond installs `pond` the first time it connects. To put `pond` on your `PATH` on a Mac, choose **Mergepond › Install command line tool…** (Install Command Line Tool before 1.0.7).
+Everything here runs on `pond`, the command line tool that comes with Mergepond. The `pond wt` commands need the Mergepond release after 1.2; the MCP server and the hooks work with earlier versions too. Mergepond doesn't need to be running. On a machine you reach over SSH, Mergepond installs `pond` the first time it connects. To put `pond` on your `PATH` on a Mac, choose **Mergepond › Set up pond and coding agents…** (**Install command line tool…** before 1.4). The plugins below find the `pond` inside Mergepond.app when it isn't on your `PATH`; the OpenCode and Antigravity hooks need the Mergepond release after 1.4.
 
 ## What is Mergepond?
 
@@ -41,6 +41,25 @@ codex mcp add mergepond -- pond mcp
 ```
 
 Then add [`codex/AGENTS.md`](codex/AGENTS.md) to your `AGENTS.md` (in the repository or `~/.codex/AGENTS.md`). See [`codex/config.toml`](codex/config.toml) for a longer tool timeout, so a big install finishes in one call, and an optional `notify` hook that marks worktrees for review at the end of each turn.
+
+## OpenCode
+
+```
+opencode mcp add mergepond --global -- pond mcp
+```
+
+Then copy [`opencode/mergepond.js`](opencode/mergepond.js) to `~/.config/opencode/plugins/` and [`opencode/skills/worktrees`](opencode/skills/worktrees) to `~/.config/opencode/skills/` (or a repository's `.opencode/plugins/` and `.opencode/skills/`). The plugin marks OpenCode's worktrees "working" when you send a message and "review" when it finishes; the skill tells it when and how to use a worktree.
+
+## Antigravity
+
+Install the plugin in [`antigravity/mergepond`](antigravity/mergepond) with the Antigravity CLI:
+
+```
+git clone https://github.com/Webb-Ventures/mergepond-plugins
+agy plugin install mergepond-plugins/antigravity/mergepond
+```
+
+It adds the `mergepond` MCP server, the worktrees skill, and hooks that mark Antigravity's worktrees "working" when you send a message and "review" once it's idle. In a repository where you haven't chosen how agents use worktrees, the first message of a conversation reminds it to ask you.
 
 ## Other agents
 
@@ -116,9 +135,9 @@ Mergepond's worktree settings save to `.mergepond.local.toml`, or to `.mergepond
 
 ## Releasing
 
-A new plugin version is a `version` bump in `mergepond/.claude-plugin/plugin.json`, merged to `main`. Claude Code installs from `main`, so it's out as soon as it merges.
+A new plugin version is a `version` bump in `mergepond/.claude-plugin/plugin.json`, merged to `main`. Claude Code installs from `main`, so it's out as soon as it merges. The Antigravity plugin's version is in `antigravity/mergepond/plugin.json`, and the OpenCode plugin's on the first line of `opencode/mergepond.js`. The three copies of the worktrees skill (`mergepond/`, `antigravity/mergepond/` and `opencode/`) must match; CI checks.
 
-The Mergepond app bundles copies of `plugin.json` and `codex/AGENTS.md` for its **Set up pond and coding agents** sheet. Its version is the one the app installs and updates to. When either file changes on `main`, the `sync-mergepond` workflow opens a pull request into Mergepond's `staging` with the new copies, or updates the one already open. Users get them with the next Mergepond release. Run it by hand from the Actions tab.
+The Mergepond app bundles copies of `plugin.json`, `codex/AGENTS.md`, the Antigravity plugin and the OpenCode plugin for its **Set up pond and coding agents** sheet. Their versions are the ones the app installs and updates to. When any of them changes on `main`, the `sync-mergepond` workflow opens a pull request into Mergepond's `staging` with the new copies, or updates the one already open. Users get them with the next Mergepond release. Run it by hand from the Actions tab.
 
 The workflow needs a `MERGEPOND_SYNC_TOKEN` secret: a fine-grained personal access token (or GitHub App token) for Webb-Ventures/mergepond with **Contents** and **Pull requests** set to read and write. It pushes the `sync/mergepond-plugin` branch with that token rather than this repository's own, so Mergepond's required checks run on the pull request.
 
